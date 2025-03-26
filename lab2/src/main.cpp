@@ -3,35 +3,35 @@
 #include <fstream>
 #include <sstream>
 
-#define ITER 250
+#define ITER 100
 
-double f(double x) {
+long double f(long double x) {
   return x * x * x / (6 * (std::sinh(x) - x));
 }
 
 int fac(int x) {
-  return x <= 2 ? 1 : x * fac(x-1);
+  return x < 2 ? 1 : x * fac(x-1);
 }
 
-double f_tylor(double x, int iter) {
-  double result = x * x * x;
-  double sum;
+long double f_tylor(long double x) {
+  long double sum = 0.0L;
+  long double term = x;
 
-  for (int i = 0; i < iter; i++) {
+  for (int i = 1; i <= ITER; i++) {
     // z rozwiniecia w szereg tylora
-    sum += std::pow(x, 2 * i + 1) / fac(2 * i + 1);
+    term *= x * x / fac(2 * i + 1);
+
+    if (term < std::numeric_limits<long double>::epsilon())
+      break;
+
+    sum += term;
   }
 
-  sum -= x;
-  sum *= 6;
-
-  result /= sum;
-
-  return result;
+  return (x * x * x) / (6.0L * sum);
 }
 
 int main() {
-  double logx, x, fx, e;
+  long double logx, x, fx, e, et;
   std::string line;
   std::ifstream file("dane.txt");
 
@@ -44,9 +44,11 @@ int main() {
 
     ss >> logx >> x >> fx;
 
-    e = std::fabs((f(x) - fx) / fx);
+    e = std::fabsl((f(x) - fx) / fx);
+    et = std::fabsl((f_tylor(x) - fx) / fx);
 
-    std::cout << logx << "\t" << std::log10(e) << std::endl;
+    //std::cout << logx << "\t" << std::log10(e) << "\t" << std::log10(et) << std::endl;
+    std::cout << x << "\t" << fx << "\t" << f(x) << "\t" << f_tylor(x) << std::endl;
   }
 
   file.close();
