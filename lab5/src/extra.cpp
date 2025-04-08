@@ -16,6 +16,7 @@ int main() {
     Vector x;
     Vector b = { 6.0L + e, 6.0L + 2.0L * e, 6.0L + 2.0L * e, 6.0L + e };
 
+    std::cout.precision(std::numeric_limits<long double>::max_digits10 - 1);
     std::cout << "=== wynik dla e=" << e << "===" << std::endl;
 
     Solve(A, x, b);
