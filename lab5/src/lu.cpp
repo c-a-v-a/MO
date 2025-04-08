@@ -4,20 +4,6 @@
 
 #include "lu.hpp"
 
-int main() {
-  Matrix a = {
-    { 5.0L, 4.0L, 3.0L, 2.0L, 1.0L },
-    { 10.0L, 8.0L, 7.0L, 6.0L, 5.0L },
-    { -1.0L, 2.0L, -3.0L, 4.0L, -5.0L },
-    { 6.0L, 5.0L, -4.0L, 3.0L, -2.0L },
-    { 1.0L, 2.0L, 3.0L, 4.0L, 5.0L }
-  };
-  Vector x;
-  Vector b = { 37.0L, 99.0L, -9.0L, 12.0L, 53.0L };
-
-  Solve(a, x, b);
-}
-
 bool IsSquare(const Matrix& x) {
   int size = x.size();
 
@@ -66,6 +52,9 @@ void LUFactorization(Matrix& l, Matrix& u, Vector& p) {
     int topRow = p.at(i);
 
     l.at(topRow).at(i) = 1.0L;
+
+    if (u.at(topRow).at(i) == 0)
+      topRow = 0;
     
     for (int j = i + 1; j < u.size(); j++) {
       int row = p.at(j);
@@ -179,12 +168,13 @@ void CalculateX(const Matrix& u, Vector& x, const Vector& y, const Vector& p) {
   x = z;
 }
 
-void Solve(Matrix& a, Vector& x, Vector& b) {
+void Solve(Matrix& a, Vector& x, const Vector& b) {
   if (!IsSquare(a))
     throw std::runtime_error("Matrix A is not square");
   if(a.size() != b.size())
     throw std::runtime_error("Vector b is wrong size"); 
 
+  #ifndef NOPRINT
   std::cout << "=== SOLVE ===" << std::endl;
   std::cout << "--- MATRIX A ---" << std::endl;
   PrintMatrix(a);
@@ -192,6 +182,7 @@ void Solve(Matrix& a, Vector& x, Vector& b) {
   std::cout << "--- VECTOR B ---" << std::endl;
   PrintVector(b);
   std::cout << std::endl;
+  #endif
 
   Vector p;
   Vector y;
@@ -199,6 +190,7 @@ void Solve(Matrix& a, Vector& x, Vector& b) {
 
   LUFactorization(l, a, p);
 
+  #ifndef NOPRINT
   std::cout << "--- MATRIX L ---" << std::endl;
   PrintPMatrix(l, p);
   std::cout << std::endl;
@@ -208,18 +200,23 @@ void Solve(Matrix& a, Vector& x, Vector& b) {
   std::cout << "--- PERMUTATION VECTOR ---" << std::endl;
   PrintVector(p);
   std::cout << std::endl;
+  #endif
 
   CalculateY(l, y, b, p);
 
+  #ifndef NOPRINT
   std::cout << "--- VECTOR Y ---" << std::endl;
   PrintPVector(y, p);
   std::cout << std::endl;
+  #endif
 
   CalculateX(a, x, y, p);
 
+  #ifndef NOPRINT
   std::cout << "--- VECTOR X ---" << std::endl;
   PrintPVector(x, p);
   std::cout << std::endl;
+  #endif
 
   Vector z(x.size(), 0.0L);
 

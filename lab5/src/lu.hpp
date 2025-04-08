@@ -34,6 +34,6 @@ void CalculateY(const Matrix& l, Vector& y, const Vector& b, const Vector& p);
 
 void CalculateX(const Matrix& u, Vector& x, const Vector& y, const Vector& p);
 
-void Solve(Matrix& a, Vector& x, Vector& b);
+void Solve(Matrix& a, Vector& x, const Vector& b);
 
 #endif
